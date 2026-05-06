@@ -1,14 +1,16 @@
 # 电影搭子.skill
 
-![电影搭子.skill logo](references/logo.png)
+<p align="center">
+  <img src="references/logo.png" alt="电影搭子.skill logo" width="180" />
+</p>
 
 一个无剧透、包容接纳的 Codex 电影陪看 skill。
 
 A no-spoiler, inclusive Codex movie companion skill.
 
-它的核心玩法很简单：你说“开始观看”，它记录当前墙钟时间和片内时间；之后你随时提问，它先计算电影播放到哪里，再只读取安全时间点之前的字幕上下文来回答。它会像一个搭子一样聊电影，但不会提前说后面的剧情。
+你说“开始观看”，它记录当前墙钟时间和片内时间；之后你随时提问，它会先计算电影播放到哪里，再只读取安全时间点之前的字幕上下文来回答。它像一个搭子一样陪你聊电影，但不会提前说后面的剧情。
 
-The core loop is simple: when you say "开始观看" or "start watching", it records the wall-clock time and the movie timestamp. When you ask a question later, it first calculates where the movie should be, retrieves only subtitle context before the safe time, and answers like a movie buddy without spoiling later events.
+When you say "开始观看" or "start watching", it records wall-clock time and movie time. When you ask a question later, it calculates where the movie should be, retrieves only subtitle context before the safe time, and answers like a movie buddy without spoiling later events.
 
 ## 能做什么 / Features
 
@@ -40,25 +42,91 @@ The core loop is simple: when you say "开始观看" or "start watching", it rec
 
 ## 安装 / Installation
 
-把这个仓库作为 Codex skill 放到：
+> Replace `<owner>/<repo>` with the GitHub repository where this skill is published.
+>
+> 把 `<owner>/<repo>` 替换成你发布这个 skill 的 GitHub 仓库名。
 
-```powershell
-C:\Users\Vincent\.codex\skills\movie-companion
+### Option A: Codex `$skill-installer`
+
+Codex's official installer can install a skill from a GitHub repo path. This repository stores the skill at the repo root, so use `--path .` and name it explicitly:
+
+Codex 官方安装器可以从 GitHub 仓库路径安装 skill。这个仓库把 skill 放在根目录，所以使用 `--path .` 并显式命名：
+
+```text
+$skill-installer install the movie-companion skill from <owner>/<repo> with path . and name movie-companion
 ```
 
-或者复制仓库内容：
+Equivalent command if you are using the local installer script directly:
 
-```powershell
-Copy-Item -Recurse -Force "D:\Projects\movie companion\*" "C:\Users\Vincent\.codex\skills\movie-companion"
+如果你直接使用本地安装脚本，对应命令是：
+
+```bash
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo <owner>/<repo> \
+  --path . \
+  --name movie-companion
 ```
 
-重启 Codex 后，显示名会是：
+Restart Codex after installation.
+
+安装完成后重启 Codex。
+
+### Option B: Skills CLI
+
+The open agent skills ecosystem also supports GitHub installs:
+
+开放 Agent Skills 生态也支持从 GitHub 安装：
+
+```bash
+npx skills add <owner>/<repo> --agent codex
+```
+
+If your installer asks for a specific skill, choose `movie-companion`.
+
+如果安装器要求选择具体 skill，请选择 `movie-companion`。
+
+### Option C: Manual Install
+
+Clone the repository, then run the included installer:
+
+克隆仓库，然后运行仓库自带安装脚本：
+
+```bash
+git clone https://github.com/<owner>/<repo>.git movie-companion
+cd movie-companion
+bash scripts/install.sh
+```
+
+PowerShell version:
+
+PowerShell 版本：
+
+```powershell
+git clone https://github.com/<owner>/<repo>.git movie-companion
+Set-Location movie-companion
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
+```
+
+Validate the install:
+
+验证安装：
+
+```bash
+ls ~/.codex/skills/movie-companion
+head -n 5 ~/.codex/skills/movie-companion/SKILL.md
+```
+
+After restarting Codex, the display name is:
+
+重启 Codex 后，显示名是：
 
 ```text
 电影搭子.skill
 ```
 
-内部调用名仍然是：
+The internal invocation name is:
+
+内部调用名是：
 
 ```text
 $movie-companion
@@ -66,31 +134,57 @@ $movie-companion
 
 ## 快速开始 / Quick Start
 
+Use your own subtitle paths. The examples below use placeholder filenames.
+
+请替换成你自己的字幕路径。下面都是通用占位示例。
+
+Create a subtitle index:
+
 生成字幕索引：
 
-```powershell
-python .\scripts\movie_sync.py index `
-  --subtitle "D:\Projects\movie companion\La.La.Land.English-WWW.MY-SUBS.CO.srt" `
-  --movie "La La Land" `
-  --output "D:\Projects\movie companion\la-la-land.movie-index.json"
+```bash
+python scripts/movie_sync.py index \
+  --subtitle /path/to/movie-dialogue.srt \
+  --description /path/to/movie-description.srt \
+  --movie "Movie Title" \
+  --output /path/to/movie.movie-index.json
 ```
+
+If you only have dialogue subtitles, omit `--description`:
+
+如果只有普通对白字幕，可以省略 `--description`：
+
+```bash
+python scripts/movie_sync.py index \
+  --subtitle /path/to/movie-dialogue.srt \
+  --movie "Movie Title" \
+  --output /path/to/movie.movie-index.json
+```
+
+Start screening mode:
 
 开始放映：
 
-```powershell
-python .\scripts\movie_sync.py start `
-  --index "D:\Projects\movie companion\la-la-land.movie-index.json" `
-  --at 00:00:00 `
-  --session "D:\Projects\movie companion\la-la-land.watch-session.json"
+```bash
+python scripts/movie_sync.py start \
+  --index /path/to/movie.movie-index.json \
+  --at 00:00:00 \
+  --session /path/to/movie.watch-session.json
 ```
 
-提问前取安全上下文：
+Get the spoiler-safe context bundle before answering:
 
-```powershell
-python .\scripts\movie_sync.py ask `
-  --session "D:\Projects\movie companion\la-la-land.watch-session.json" `
+提问前获取无剧透安全上下文：
+
+```bash
+python scripts/movie_sync.py ask \
+  --session /path/to/movie.watch-session.json \
   --before 900
 ```
+
+PowerShell users can use the same commands on one line, or replace `\` with PowerShell backticks.
+
+PowerShell 用户可以写成一行，或把 `\` 换成 PowerShell 的反引号。
 
 ## GPT 推荐的 5 个字幕搜集网页 / 5 Subtitle Sites Recommended by GPT
 
@@ -106,17 +200,21 @@ Use these only to find matching subtitles for movies or shows you can legally wa
 | SubHD | [subhd.tv](https://subhd.tv/) | 中文圈常用，适合中英双语字幕；页面也列了备用域名：`subhdtw.com`、`subhd.la`、`subhd.cc`、`subhd.me`。 / Popular in Chinese subtitle communities, especially for bilingual Chinese-English subtitles; it also lists backup domains. |
 | Addic7ed | [addic7ed.com](https://www.addic7ed.com/) | 英文剧集字幕很强，尤其美剧/英剧。 / Strong for English TV subtitles, especially US and UK series. |
 
-如果能找到 SDH、closed captions、descriptive subtitles 或 audio-description transcript，这个 skill 会更懂场面；只有普通字幕也可以，只是视觉细节会更谨慎。
-
 If you can find SDH, closed captions, descriptive subtitles, or audio-description transcripts, this skill gets better scene context. Regular dialogue subtitles still work, but visual details will be handled more cautiously.
+
+如果能找到 SDH、closed captions、descriptive subtitles 或 audio-description transcript，这个 skill 会更懂场面；只有普通字幕也可以，只是视觉细节会更谨慎。
 
 ## 放映模式口令 / Screening Mode Commands
 
-你可以这样跟 Codex 说：
+You can say:
+
+你可以这样说：
 
 ```text
 开始观看
 ```
+
+If you are not starting from the beginning:
 
 如果不是从头开始：
 
@@ -124,12 +222,16 @@ If you can find SDH, closed captions, descriptive subtitles, or audio-descriptio
 开始观看 00:17:42
 ```
 
+Pause or close:
+
 暂停或关闭：
 
 ```text
 暂停
 关闭放映模式
 ```
+
+Resume with a visible timestamp:
 
 继续时重新给一个可见时间点：
 
@@ -139,21 +241,24 @@ If you can find SDH, closed captions, descriptive subtitles, or audio-descriptio
 
 ## 无剧透规则 / No-Spoiler Rule
 
+Default safe time:
+
 默认安全时间是：
 
 ```text
+estimated movie time - 8 seconds
 当前估算片内时间 - 8 秒
 ```
 
-回答只能使用安全时间之前的字幕和描述轨。即使模型知道电影结局，也不能把后面的信息带进来。
-
 Answers can only use subtitles and descriptive tracks before the safe time. Even if the model knows the ending, it must not bring later information into the answer.
+
+回答只能使用安全时间之前的字幕和描述轨。即使模型知道电影结局，也不能把后面的信息带进来。
 
 ## 搭子语气 / Companion Voice
 
-这个 skill 的语气要包容、接纳、轻松。用户问基础问题、看漏了、没听懂歌词、对角色有不同感受，都应该被正常接住。
-
 The skill should sound inclusive, accepting, and easy to talk to. Basic questions, missed details, confused reactions, emotional responses, or unusual interpretations are all welcome.
+
+这个 skill 的语气要包容、接纳、轻松。用户问基础问题、看漏了、没听懂歌词、对角色有不同感受，都应该被正常接住。
 
 ## 仓库结构 / Repository Structure
 
@@ -166,6 +271,8 @@ The skill should sound inclusive, accepting, and easy to talk to. Basic question
 │   ├── architecture.md
 │   └── logo.png
 ├── scripts/
+│   ├── install.ps1
+│   ├── install.sh
 │   └── movie_sync.py
 ├── examples/
 │   └── sample-dialogue.srt
