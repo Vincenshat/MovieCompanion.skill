@@ -1,5 +1,7 @@
 # 电影搭子.skill
 
+![电影搭子.skill logo](references/logo.png)
+
 一个无剧透、包容接纳的 Codex 电影陪看 skill。
 
 A no-spoiler, inclusive Codex movie companion skill.
@@ -161,7 +163,8 @@ The skill should sound inclusive, accepting, and easy to talk to. Basic question
 ├── agents/
 │   └── openai.yaml
 ├── references/
-│   └── architecture.md
+│   ├── architecture.md
+│   └── logo.png
 ├── scripts/
 │   └── movie_sync.py
 ├── examples/

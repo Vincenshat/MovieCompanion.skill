@@ -1,4 +1,6 @@
 interface:
   display_name: "电影搭子.skill"
   short_description: "无剧透、包容接纳的电影陪看"
+  icon_small: "./references/logo.png"
+  icon_large: "./references/logo.png"
   default_prompt: "Use $movie-companion / 电影搭子.skill to watch a film with synced subtitles, no spoilers, and an inclusive companion voice."
