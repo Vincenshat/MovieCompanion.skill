@@ -1,0 +1,31 @@
+# Local watch data
+*.movie-index.json
+*.watch-session.json
+.movie-companion/
+
+# User-provided media/subtitles
+*.srt
+*.vtt
+*.ass
+*.ssa
+*.mp4
+*.mkv
+*.mov
+*.avi
+
+# Keep repository examples
+!examples/*.srt
+!examples/*.vtt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
