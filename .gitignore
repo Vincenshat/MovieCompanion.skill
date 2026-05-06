@@ -16,9 +16,12 @@
 # Keep repository examples
 !examples/*.srt
 !examples/*.vtt
+!skills/*/examples/*.srt
+!skills/*/examples/*.vtt
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 .venv/
 venv/
@@ -28,4 +31,3 @@ venv/
 Thumbs.db
 .idea/
 .vscode/
-

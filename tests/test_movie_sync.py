@@ -1,7 +1,12 @@
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SKILL_ROOT = ROOT / "skills" / "movie-companion"
+sys.path.insert(0, str(SKILL_ROOT))
 
 from scripts import movie_sync
 

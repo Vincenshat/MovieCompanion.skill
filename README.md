@@ -1,7 +1,7 @@
 # 电影搭子.skill
 
 <p align="center">
-  <img src="references/logo.png" alt="电影搭子.skill logo" width="180" />
+  <img src="skills/movie-companion/references/logo.png" alt="电影搭子.skill logo" width="180" />
 </p>
 
 一个无剧透、包容接纳的 Codex 电影陪看 skill。
@@ -48,12 +48,12 @@ When you say "开始观看" or "start watching", it records wall-clock time and 
 
 ### Option A: Codex `$skill-installer`
 
-Codex's official installer can install a skill from a GitHub repo path. This repository stores the skill at the repo root, so use `--path .` and name it explicitly:
+Codex's official installer can install a skill from a GitHub repo path. This repository stores the skill at `skills/movie-companion`:
 
-Codex 官方安装器可以从 GitHub 仓库路径安装 skill。这个仓库把 skill 放在根目录，所以使用 `--path .` 并显式命名：
+Codex 官方安装器可以从 GitHub 仓库路径安装 skill。这个仓库把 skill 放在 `skills/movie-companion`：
 
 ```text
-$skill-installer install the movie-companion skill from <owner>/<repo> with path . and name movie-companion
+$skill-installer install the movie-companion skill from <owner>/<repo> with path skills/movie-companion
 ```
 
 Equivalent command if you are using the local installer script directly:
@@ -63,8 +63,7 @@ Equivalent command if you are using the local installer script directly:
 ```bash
 python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
   --repo <owner>/<repo> \
-  --path . \
-  --name movie-companion
+  --path skills/movie-companion
 ```
 
 Restart Codex after installation.
@@ -143,7 +142,7 @@ Create a subtitle index:
 生成字幕索引：
 
 ```bash
-python scripts/movie_sync.py index \
+python skills/movie-companion/scripts/movie_sync.py index \
   --subtitle /path/to/movie-dialogue.srt \
   --description /path/to/movie-description.srt \
   --movie "Movie Title" \
@@ -155,7 +154,7 @@ If you only have dialogue subtitles, omit `--description`:
 如果只有普通对白字幕，可以省略 `--description`：
 
 ```bash
-python scripts/movie_sync.py index \
+python skills/movie-companion/scripts/movie_sync.py index \
   --subtitle /path/to/movie-dialogue.srt \
   --movie "Movie Title" \
   --output /path/to/movie.movie-index.json
@@ -166,7 +165,7 @@ Start screening mode:
 开始放映：
 
 ```bash
-python scripts/movie_sync.py start \
+python skills/movie-companion/scripts/movie_sync.py start \
   --index /path/to/movie.movie-index.json \
   --at 00:00:00 \
   --session /path/to/movie.watch-session.json
@@ -177,7 +176,7 @@ Get the spoiler-safe context bundle before answering:
 提问前获取无剧透安全上下文：
 
 ```bash
-python scripts/movie_sync.py ask \
+python skills/movie-companion/scripts/movie_sync.py ask \
   --session /path/to/movie.watch-session.json \
   --before 900
 ```
@@ -191,9 +190,9 @@ Pause, close, or inspect a session:
 暂停、关闭或查看会话状态：
 
 ```bash
-python scripts/movie_sync.py pause --session /path/to/movie.watch-session.json
-python scripts/movie_sync.py close --session /path/to/movie.watch-session.json
-python scripts/movie_sync.py status --session /path/to/movie.watch-session.json
+python skills/movie-companion/scripts/movie_sync.py pause --session /path/to/movie.watch-session.json
+python skills/movie-companion/scripts/movie_sync.py close --session /path/to/movie.watch-session.json
+python skills/movie-companion/scripts/movie_sync.py status --session /path/to/movie.watch-session.json
 ```
 
 ## GPT 推荐的 5 个字幕搜集网页 / 5 Subtitle Sites Recommended by GPT
@@ -274,21 +273,24 @@ The skill should sound inclusive, accepting, and easy to talk to. Basic question
 
 ```text
 .
-├── SKILL.md
-├── agents/
-│   └── openai.yaml
-├── references/
-│   ├── architecture.md
-│   └── logo.png
+├── skills/
+│   └── movie-companion/
+│       ├── SKILL.md
+│       ├── agents/
+│       │   └── openai.yaml
+│       ├── references/
+│       │   ├── architecture.md
+│       │   └── logo.png
+│       ├── scripts/
+│       │   ├── __init__.py
+│       │   └── movie_sync.py
+│       └── examples/
+│           └── sample-dialogue.srt
 ├── scripts/
-│   ├── __init__.py
 │   ├── install.ps1
-│   ├── install.sh
-│   └── movie_sync.py
+│   └── install.sh
 ├── tests/
 │   └── test_movie_sync.py
-├── examples/
-│   └── sample-dialogue.srt
 ├── README.md
 ├── 搭子说明.md
 ├── LICENSE
