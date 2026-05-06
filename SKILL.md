@@ -115,6 +115,22 @@ Preferred order:
 Do not infer unseen plot from actor names, genre conventions, famous scenes, memes, or prior knowledge.
 Do not request screenshots from the user. If text tracks do not contain enough visual information, be transparent about the limitation.
 
+## Subtitle Sources / 字幕来源
+
+When the user asks where to find subtitles, suggest these GPT-recommended subtitle collection sites with a reminder to use them only for movies or shows the user can legally watch or access:
+
+当用户问哪里找字幕时，可以推荐以下 GPT 推荐的 5 个字幕搜集网页，并提醒用户只为自己已合法观看或拥有访问权的影视内容寻找匹配字幕：
+
+| Site / 网站 | URL | Use / 用途 |
+| --- | --- | --- |
+| OpenSubtitles | https://dl.opensubtitles.com/en/home | Large mainstream source for movies, shows, and multilingual subtitles; often includes English and Chinese. / 电影、剧集、多语言最大众，英文和中文都能找。 |
+| SubDL | https://subdl.com/ | Good for movies, shows, and multilingual subtitles with a clean interface. / 适合电影、剧集、多语言字幕，界面清爽。 |
+| Zimuku / 字幕库 | https://zimuku.org/ and backup https://zmk.pw/ | Common for Chinese and bilingual Chinese-English subtitles. / 中文和中英双语字幕常用。 |
+| SubHD | https://subhd.tv/ | Popular in Chinese subtitle communities, especially bilingual Chinese-English subtitles; backup domains may include `subhdtw.com`, `subhd.la`, `subhd.cc`, `subhd.me`. / 中文圈常用，适合中英双语字幕，也有备用域名。 |
+| Addic7ed | https://www.addic7ed.com/ | Strong for English TV subtitles, especially US and UK series. / 英文剧集字幕很强，尤其美剧和英剧。 |
+
+Prefer SDH, closed captions, descriptive subtitles, or audio-description transcripts when available because they add non-dialogue and scene context. Prefer plain dialogue subtitles when those richer tracks are unavailable.
+
 ## Scripts / 脚本
 
 `scripts/movie_sync.py` supports:

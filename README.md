@@ -90,6 +90,24 @@ python .\scripts\movie_sync.py ask `
   --before 900
 ```
 
+## GPT 推荐的 5 个字幕搜集网页 / 5 Subtitle Sites Recommended by GPT
+
+请只为你已经合法观看或拥有访问权的影视内容寻找匹配字幕。字幕站点的可用性、域名和内容质量会变化，下载前自己判断来源和安全性。
+
+Use these only to find matching subtitles for movies or shows you can legally watch or access. Availability, domains, and subtitle quality can change; use your own judgment before downloading files.
+
+| 网站 / Site | 链接 / Link | 适合什么 / Best For |
+| --- | --- | --- |
+| OpenSubtitles | [dl.opensubtitles.com](https://dl.opensubtitles.com/en/home) | 电影/剧集/多语言最大众，英文和中文都能找。 / A large mainstream subtitle source for movies, shows, and many languages, including English and Chinese. |
+| SubDL | [subdl.com](https://subdl.com/) | 很适合找电影、剧集、多语言字幕，界面比较清爽。 / Good for movies, shows, and multilingual subtitles with a clean interface. |
+| Zimuku / 字幕库 | [zimuku.org](https://zimuku.org/)；备用 / mirror: [zmk.pw](https://zmk.pw/) | 中文/中英双语字幕常用。 / Commonly used for Chinese and bilingual Chinese-English subtitles. |
+| SubHD | [subhd.tv](https://subhd.tv/) | 中文圈常用，适合中英双语字幕；页面也列了备用域名：`subhdtw.com`、`subhd.la`、`subhd.cc`、`subhd.me`。 / Popular in Chinese subtitle communities, especially for bilingual Chinese-English subtitles; it also lists backup domains. |
+| Addic7ed | [addic7ed.com](https://www.addic7ed.com/) | 英文剧集字幕很强，尤其美剧/英剧。 / Strong for English TV subtitles, especially US and UK series. |
+
+如果能找到 SDH、closed captions、descriptive subtitles 或 audio-description transcript，这个 skill 会更懂场面；只有普通字幕也可以，只是视觉细节会更谨慎。
+
+If you can find SDH, closed captions, descriptive subtitles, or audio-description transcripts, this skill gets better scene context. Regular dialogue subtitles still work, but visual details will be handled more cautiously.
+
 ## 放映模式口令 / Screening Mode Commands
 
 你可以这样跟 Codex 说：
