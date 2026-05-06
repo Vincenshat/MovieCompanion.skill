@@ -127,6 +127,7 @@ def cmd_start(args: argparse.Namespace) -> None:
     session = Path(args.session).expanduser().resolve() if args.session else state_dir / "watch-session.json"
     payload = {
         "index": str(index),
+        "mode": "screening",
         "started_at_wall_utc": datetime.now(timezone.utc).isoformat(),
         "started_at_movie_seconds": parse_time(args.at),
         "playback_rate": float(args.rate),
@@ -137,6 +138,15 @@ def cmd_start(args: argparse.Namespace) -> None:
 
 
 def estimate_time(session: dict) -> tuple[float, float]:
+    mode = session.get("mode", "screening")
+    if mode == "paused":
+        estimated = float(session["paused_at_movie_seconds"])
+        safe = max(0.0, estimated - float(session.get("safety_lag_seconds", 8.0)))
+        return estimated, safe
+    if mode == "closed":
+        estimated = float(session.get("closed_at_movie_seconds", session.get("started_at_movie_seconds", 0.0)))
+        safe = max(0.0, estimated - float(session.get("safety_lag_seconds", 8.0)))
+        return estimated, safe
     started_wall = datetime.fromisoformat(session["started_at_wall_utc"])
     now = datetime.now(timezone.utc)
     elapsed = (now - started_wall).total_seconds() * float(session.get("playback_rate", 1.0))
@@ -148,11 +158,14 @@ def estimate_time(session: dict) -> tuple[float, float]:
 def cmd_where(args: argparse.Namespace) -> None:
     session = read_json(Path(args.session).expanduser().resolve())
     estimated, safe = estimate_time(session)
-    print(json.dumps({"estimated_time": format_time(estimated), "safe_time": format_time(safe), "safe_seconds": safe}, indent=2))
+    print(json.dumps({"mode": session.get("mode", "screening"), "estimated_time": format_time(estimated), "safe_time": format_time(safe), "safe_seconds": safe}, indent=2))
 
 
-def context_payload(session_path: Path, before: float, after: float) -> dict:
+def context_payload(session_path: Path, before: float, after: float, require_open: bool = False) -> dict:
     session = read_json(session_path)
+    mode = session.get("mode", "screening")
+    if require_open and mode == "closed":
+        raise SystemExit("Session is closed. Start or resume with a visible timestamp before asking.")
     estimated, safe = estimate_time(session)
     index = read_json(Path(session["index"]))
     start = max(0.0, safe - before)
@@ -164,6 +177,7 @@ def context_payload(session_path: Path, before: float, after: float) -> dict:
     ]
     return {
         "movie": index.get("movie"),
+        "mode": mode,
         "estimated_time": format_time(estimated),
         "safe_time": format_time(safe),
         "lookback_start": format_time(start),
@@ -178,13 +192,70 @@ def cmd_context(args: argparse.Namespace) -> None:
 
 
 def cmd_ask(args: argparse.Namespace) -> None:
-    payload = context_payload(Path(args.session).expanduser().resolve(), float(args.before), 0.0)
-    payload["mode"] = "screening"
+    payload = context_payload(Path(args.session).expanduser().resolve(), float(args.before), 0.0, require_open=True)
     payload["instruction"] = (
         "Answer only from cues ending at or before safe_time. "
         "Do not use later plot knowledge. If visual detail is missing from text tracks, say so."
     )
     print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
+def update_session(path: Path, updates: dict) -> dict:
+    session = read_json(path)
+    session.update(updates)
+    write_json(path, session)
+    return session
+
+
+def cmd_pause(args: argparse.Namespace) -> None:
+    session_path = Path(args.session).expanduser().resolve()
+    session = read_json(session_path)
+    mode = session.get("mode", "screening")
+    if mode == "closed":
+        raise SystemExit("Session is closed. Start a new session before pausing.")
+    estimated, safe = estimate_time(session)
+    session = update_session(
+        session_path,
+        {
+            "mode": "paused",
+            "paused_at_wall_utc": datetime.now(timezone.utc).isoformat(),
+            "paused_at_movie_seconds": estimated,
+        },
+    )
+    print(json.dumps({"session": str(session_path), "mode": session["mode"], "paused_at": format_time(estimated), "safe_time": format_time(safe)}, indent=2))
+
+
+def cmd_close(args: argparse.Namespace) -> None:
+    session_path = Path(args.session).expanduser().resolve()
+    session = read_json(session_path)
+    estimated, safe = estimate_time(session)
+    session = update_session(
+        session_path,
+        {
+            "mode": "closed",
+            "closed_at_wall_utc": datetime.now(timezone.utc).isoformat(),
+            "closed_at_movie_seconds": estimated,
+        },
+    )
+    print(json.dumps({"session": str(session_path), "mode": session["mode"], "closed_at": format_time(estimated), "safe_time": format_time(safe)}, indent=2))
+
+
+def cmd_status(args: argparse.Namespace) -> None:
+    session_path = Path(args.session).expanduser().resolve()
+    session = read_json(session_path)
+    estimated, safe = estimate_time(session)
+    print(
+        json.dumps(
+            {
+                "session": str(session_path),
+                "mode": session.get("mode", "screening"),
+                "estimated_time": format_time(estimated),
+                "safe_time": format_time(safe),
+                "index": session.get("index"),
+            },
+            indent=2,
+        )
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -221,6 +292,18 @@ def build_parser() -> argparse.ArgumentParser:
     ask.add_argument("--session", required=True)
     ask.add_argument("--before", default=900.0, help="Seconds to include before safe time")
     ask.set_defaults(func=cmd_ask)
+
+    pause = sub.add_parser("pause", help="Pause a watch session and freeze the estimated movie time")
+    pause.add_argument("--session", required=True)
+    pause.set_defaults(func=cmd_pause)
+
+    close = sub.add_parser("close", help="Close a watch session so future asks require a restart or resync")
+    close.add_argument("--session", required=True)
+    close.set_defaults(func=cmd_close)
+
+    status = sub.add_parser("status", help="Show watch session mode and current safe time")
+    status.add_argument("--session", required=True)
+    status.set_defaults(func=cmd_status)
 
     return parser
 

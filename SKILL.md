@@ -47,7 +47,12 @@ If the user pauses, rewinds, skips, changes playback speed, or says the timing i
 4. For each user question:
    - Run `scripts/movie_sync.py ask --session <session.json> --before <seconds>`.
    - Answer only from the returned text-track context and information that is definitely available before the safe time.
-5. If the user asks about a visual detail:
+5. Manage session state explicitly:
+   - Run `scripts/movie_sync.py pause --session <session.json>` when the user pauses playback.
+   - Run `scripts/movie_sync.py close --session <session.json>` when the user closes screening mode.
+   - Run `scripts/movie_sync.py status --session <session.json>` if timing feels unclear.
+   - If `ask` reports the session is closed, ask the user to restart with a visible timestamp.
+6. If the user asks about a visual detail:
    - Use the descriptive subtitle, SDH, audio-description, or scene-note track if available.
    - If no descriptive track exists, say that the available subtitle context may not include the visual detail. Do not ask the user for screenshots.
 
@@ -102,6 +107,7 @@ Use `movie_sync.py` for deterministic time math. The session stores:
 - Safety lag.
 
 If the user says they paused, buffered, rewound, skipped, or changed playback speed, update the session by running `start` again with the user's new visible timestamp. Never pretend precision when playback changed outside the session.
+Use `pause`, `close`, and `status` rather than manually editing session JSON.
 
 ## Data Sources / 数据来源
 
@@ -141,6 +147,9 @@ python scripts/movie_sync.py start --index movie.movie-index.json --at 00:12:30
 python scripts/movie_sync.py where --session movie.watch-session.json
 python scripts/movie_sync.py context --session movie.watch-session.json --before 600 --after 0
 python scripts/movie_sync.py ask --session movie.watch-session.json --before 900
+python scripts/movie_sync.py pause --session movie.watch-session.json
+python scripts/movie_sync.py close --session movie.watch-session.json
+python scripts/movie_sync.py status --session movie.watch-session.json
 ```
 
 Read `references/architecture.md` when extending this skill into a fuller app, browser companion, local watcher, or richer text-track pipeline.

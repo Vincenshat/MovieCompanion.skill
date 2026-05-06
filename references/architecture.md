@@ -10,6 +10,7 @@ Provide a watch-along workflow that feels live while preserving a hard no-spoile
    - Idle: no session is running.
    - Screening: user has said "开始观看" or equivalent; a session file stores wall-clock start time and movie timestamp.
    - Paused: user says playback is paused; do not estimate forward until resynced.
+   - Closed: user exits screening mode; future `ask` calls must require a fresh start or resync.
    - Resync: user provides a new visible movie timestamp after pause, rewind, skip, or drift.
    - Every in-screening question must call the sync helper first, then answer from the returned safe bundle.
 
@@ -30,6 +31,7 @@ Provide a watch-along workflow that feels live while preserving a hard no-spoile
    - Include a configurable lookback window.
    - Default to no future window.
    - The `ask` command bundles fresh time calculation plus safe context retrieval for active viewing.
+   - Closed sessions are rejected by `ask` so the companion cannot accidentally keep estimating after the user ended screening mode.
 
 4. Scene context without screenshots
    - Do not request screenshots from the user.

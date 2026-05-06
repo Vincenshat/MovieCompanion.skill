@@ -186,6 +186,16 @@ PowerShell users can use the same commands on one line, or replace `\` with Powe
 
 PowerShell 用户可以写成一行，或把 `\` 换成 PowerShell 的反引号。
 
+Pause, close, or inspect a session:
+
+暂停、关闭或查看会话状态：
+
+```bash
+python scripts/movie_sync.py pause --session /path/to/movie.watch-session.json
+python scripts/movie_sync.py close --session /path/to/movie.watch-session.json
+python scripts/movie_sync.py status --session /path/to/movie.watch-session.json
+```
+
 ## GPT 推荐的 5 个字幕搜集网页 / 5 Subtitle Sites Recommended by GPT
 
 请只为你已经合法观看或拥有访问权的影视内容寻找匹配字幕。字幕站点的可用性、域名和内容质量会变化，下载前自己判断来源和安全性。
@@ -271,9 +281,12 @@ The skill should sound inclusive, accepting, and easy to talk to. Basic question
 │   ├── architecture.md
 │   └── logo.png
 ├── scripts/
+│   ├── __init__.py
 │   ├── install.ps1
 │   ├── install.sh
 │   └── movie_sync.py
+├── tests/
+│   └── test_movie_sync.py
 ├── examples/
 │   └── sample-dialogue.srt
 ├── README.md
